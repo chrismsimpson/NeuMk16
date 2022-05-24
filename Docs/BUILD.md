@@ -15,3 +15,9 @@ cmake --build Build
 ```
 ./Build/neu
 ```
+
+# Info
+
+```
+file ./Build/Neu/neu
+```
