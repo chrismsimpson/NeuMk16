@@ -7,6 +7,12 @@
         "atomic": "cpp",
         "utility": "cpp",
         "memory": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "__config": "cpp",
+        "__bit_reference": "cpp",
+        "__string": "cpp",
+        "algorithm": "cpp",
+        "deque": "cpp",
+        "ios": "cpp"
     }
 }

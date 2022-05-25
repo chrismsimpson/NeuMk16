@@ -11,6 +11,9 @@
 #include "Types.h"
 #include "Forward.h"
 #include "Optional.h"
+#include "OwnPointer.h"
+#include "NonNullOwnPointer.h"
+#include "NonNullRefPointer.h"
 
 namespace Core {
 

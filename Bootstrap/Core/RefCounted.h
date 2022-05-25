@@ -12,6 +12,7 @@ namespace Core {
     class RefCountedBase {
 
         MAKE_NONCOPYABLE(RefCountedBase);
+        
         MAKE_NONMOVABLE(RefCountedBase);
 
     public:
