@@ -506,27 +506,451 @@ namespace Core::Detail {
     template<class T>
     inline constexpr bool IsVoid = IsSame<void, RemoveConstVolatile<T>>;
 
+    ///
+
+    template<class T>
+    inline constexpr bool IsConst = false;
+
+    template<class T>
+    inline constexpr bool IsConst<const T> = true;
 
     ///
 
-    template<typename >
+    template<typename T>
+    inline constexpr bool IsEnum = __is_enum(T);
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsUnion = __is_union(T);
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsClass = __is_class(T);
+
+    ///
+
+    template<typename Base, typename Derived>
+    inline constexpr bool IsBaseOf = __is_base_of(Base, Derived);
+
+    ///
+
+    template<typename T>
     inline constexpr bool __IsIntegral = false;
 
     template<>
     inline constexpr bool __IsIntegral<bool> = true;
 
+    template<>
+    inline constexpr bool __IsIntegral<unsigned char> = true;
+    
+    template<>
+    inline constexpr bool __IsIntegral<char8_t> = true;
+    
+    template<>
+    inline constexpr bool __IsIntegral<char16_t> = true;
+    
+    template<>
+    inline constexpr bool __IsIntegral<char32_t> = true;
+    
+    template<>
+    inline constexpr bool __IsIntegral<unsigned short> = true;
+    
+    template<>
+    inline constexpr bool __IsIntegral<unsigned int> = true;
+    
+    template<>
+    inline constexpr bool __IsIntegral<unsigned long> = true;
+    
+    template<>
+    inline constexpr bool __IsIntegral<unsigned long long> = true;
+
     template<typename T>
-    inline constexpr bool IsIntegral = true;
+    inline constexpr bool IsIntegral = __IsIntegral<MakeUnsigned<RemoveConstVolatile<T>>>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool __IsFloatingPoint = false;
+
+    template<>
+    inline constexpr bool __IsFloatingPoint<float> = true;
+
+    template<>
+    inline constexpr bool __IsFloatingPoint<double> = true;
+
+    template<>
+    inline constexpr bool __IsFloatingPoint<long double> = true;
+
+    template<typename T>
+    inline constexpr bool IsFloatingPoint = __IsFloatingPoint<RemoveConstVolatile<T>>;
+
+    ///
+
+    template<typename ReferenceType, typename T>
+    using CopyConst = Conditional<IsConst<ReferenceType>, AddConst<T>, RemoveConst<T>>;
+
+    ///
+
+    template<typename... Ts>
+    using Void = void;
+
+    ///
+
+    template<typename... _Ignored>
+    constexpr auto DependentFalse = false;
 
     ///
 
     template<typename T>
     inline constexpr bool IsSigned = IsSame<T, MakeSigned<T>>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsUnsigned = IsSame<T, MakeUnsigned<T>>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsArithmetic = IsIntegral<T> || IsFloatingPoint<T>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsFundamental = IsArithmetic<T> || IsVoid<T> || IsNullPointer<T>;
+
+    ///
+
+    template<typename T, T... Ts>
+    struct IntegerSequence {
+
+        using Type = T;
+
+        static constexpr unsigned size() noexcept { return sizeof...(Ts); };
+    };
+
+    ///
+
+    template<unsigned... Indices>
+    using IndexSequence = IntegerSequence<unsigned, Indices...>;
+
+    ///
+
+    template<typename T, T N, T... Ts>
+    auto makeIntegerSequenceImpl() {
+
+        if constexpr (N == 0) {
+
+            return IntegerSequence<T, Ts...> {};
+        }
+        else {
+
+            return makeIntegerSequenceImpl<T, N - 1, N - 1, Ts...>();
+        }
+    }
+
+    template<typename T, T N>
+    using MakeIntegerSequence = decltype(makeIntegerSequenceImpl<T, N>());
+
+    ///
+
+    template<unsigned N>
+    using MakeIndexSequence = MakeIntegerSequence<unsigned, N>;
+
+    ///
+
+    template<typename T>
+    struct __IdentityType {
+
+        using Type = T;
+    };
+
+    template<typename T>
+    using IdentityType = typename __IdentityType<T>::Type;
+
+    ///
+
+
+    template<typename T, typename = void>
+    struct __AddReference {
+
+        using LValueType = T;
+        using TValueType = T;
+    };
+
+    template<typename T>
+    struct __AddReference<T, VoidType<T&>> {
+
+        using LValueType = T&;
+        using RValueType = T&&;
+    };
+
+    template<typename T>
+    using AddLValueReference = typename __AddReference<T>::LValueType;
+
+    template<typename T>
+    using AddRValueReference = typename __AddReference<T>::RValueType;
+
+    ///
+
+    template<class T>
+    requires(IsEnum<T>) using UnderlyingType = __underlying_type(T);
+
+    ///
+
+    template<typename T, unsigned ExpectedSize, unsigned ActualSize>
+    struct __AssertSize : TrueType {
+
+        static_assert(ActualSize == ExpectedSize,
+            "actual size does not match expected size");
+
+        consteval explicit operator bool() const { return value; }
+    };
+
+    ///
+
+    // Note: This type is useful, as the sizes will be visible in the
+    //       compiler error messages, as they will be part of the
+    //       template parameters. This is not possible with a
+    //       static_assert on the sizeof a type.
+    template<typename T, unsigned ExpectedSize>
+    using AssertSize = __AssertSize<T, ExpectedSize, sizeof(T)>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsPOD = __is_pod(T);
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsTrivial = __is_trivial(T);
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsTriviallyCopyable = __is_trivially_copyable(T);
+
+    ///
+
+    template<typename T, typename... Args>
+    inline constexpr bool IsCallableWithArguments = requires(T t) { t(declval<Args>()...); };
+
+    ///
+
+    template<typename T, typename... Args>
+    inline constexpr bool IsConstructible = requires { ::new T(declval<Args>()...); };
+
+    ///
+
+    template<typename T, typename... Args>
+    inline constexpr bool IsTriviallyConstructible = __is_trivially_constructible(T, Args...);
+
+    ///
+
+    template<typename From, typename To>
+    inline constexpr bool IsConvertible = requires { declval<void (*)(To)>()(declval<From>()); };
+
+    ///
+
+    template<typename T, typename U>
+    inline constexpr bool IsAssignable = requires { declval<T>() = declval<U>(); };
+
+    ///
+
+    template<typename T, typename U>
+    inline constexpr bool IsTriviallyAssignable = __is_trivially_assignable(T, U);
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsDestructible = requires { declval<T>().~T(); };
+
+    ///
+
+    template<typename T>
+    #if defined(__clang__)
+    inline constexpr bool IsTriviallyDestructible = __is_trivially_destructible(T);
+    #else
+    inline constexpr bool IsTriviallyDestructible = __has_trivial_destructor(T) && IsDestructible<T>;
+    #endif
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsCopyConstructible = IsConstructible<T, AddLValueReference<AddConst<T>>>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsTriviallyCopyConstructible = IsTriviallyConstructible<T, AddLValueReference<AddConst<T>>>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsCopyAssignable = IsAssignable<AddLValueReference<T>, AddLValueReference<AddConst<T>>>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsTriviallyCopyAssignable = IsTriviallyAssignable<AddLValueReference<T>, AddLValueReference<AddConst<T>>>;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsMoveConstructible = IsConstructible<T, AddRValueReference<T>>;
+
+    ///
+    
+    template<typename T>
+    inline constexpr bool IsTriviallyMoveConstructible = IsTriviallyConstructible<T, AddRValueReference<T>>;
+
+    ///
+    
+    template<typename T>
+    inline constexpr bool IsMoveAssignable = IsAssignable<AddLValueReference<T>, AddRValueReference<T>>;
+
+    ///
+    
+    template<typename T>
+    inline constexpr bool IsTriviallyMoveAssignable = IsTriviallyAssignable<AddLValueReference<T>, AddRValueReference<T>>;
+
+    ///
+    
+    template<typename T, template<typename...> typename U>
+    inline constexpr bool IsSpecializationOf = false;
+
+    ///
+
+    template<template<typename...> typename U, typename... Us>
+    inline constexpr bool IsSpecializationOf<U<Us...>, U> = true;
+
+    ///
+
+    template<typename T>
+    struct __decay {
+
+        typedef Detail::RemoveConstVolatileReference<T> type;
+    };
+
+    template<typename T>
+    struct __decay<T[]> {
+
+        typedef T* type;
+    };
+
+    template<typename T, decltype(sizeof(T)) N>
+    struct __decay<T[N]> {
+
+        typedef T* type;
+    };
+
+    // FIXME: Function decay
+
+    template<typename T>
+    using Decay = typename __decay<T>::type;
+
+    ///
+
+    template<typename T, typename U>
+    inline constexpr bool IsPointerOfType = IsPointer<Decay<U>>&& IsSame<T, RemoveConstVolatile<RemovePointer<Decay<U>>>>;
+
+    ///
+
+    template<typename T, typename U>
+    inline constexpr bool IsHashCompatible = false;
+
+    ///
+
+    template<typename T>
+    inline constexpr bool IsHashCompatible<T, T> = true;
+
+    ///
+
+    template<typename T, typename... Ts>
+    inline constexpr bool IsOneOf = (IsSame<T, Ts> || ...);
+
+    ///
+
+    template<typename T, typename U>
+    inline constexpr bool IsSameIgnoringConstVolatile = IsSame<RemoveConstVolatile<T>, RemoveConstVolatile<U>>;
+
+    ///
+
+    template<typename T, typename... Ts>
+    inline constexpr bool IsOneOfIgnoringConstVolatile = (IsSameIgnoringConstVolatile<T, Ts> || ...);
 }
 
+using Core::Detail::AddConst;
+using Core::Detail::AddConstToReferencedType;
+using Core::Detail::AddLValueReference;
+using Core::Detail::AddRValueReference;
+using Core::Detail::AssertSize;
+using Core::Detail::CommonType;
+using Core::Detail::Conditional;
+using Core::Detail::CopyConst;
+using Core::Detail::declval;
+using Core::Detail::DependentFalse;
 using Core::Detail::FalseType;
+using Core::Detail::IdentityType;
+using Core::Detail::IndexSequence;
+using Core::Detail::IntegerSequence;
+using Core::Detail::IsArithmetic;
+using Core::Detail::IsAssignable;
+using Core::Detail::IsBaseOf;
+using Core::Detail::IsCallableWithArguments;
+using Core::Detail::IsClass;
+using Core::Detail::IsConst;
+using Core::Detail::IsConstructible;
+using Core::Detail::IsConvertible;
+using Core::Detail::IsCopyAssignable;
+using Core::Detail::IsCopyConstructible;
+using Core::Detail::IsDestructible;
+using Core::Detail::IsEnum;
+using Core::Detail::IsFloatingPoint;
+using Core::Detail::IsFunction;
+using Core::Detail::IsFundamental;
+using Core::Detail::IsHashCompatible;
 using Core::Detail::IsIntegral;
 using Core::Detail::IsLValueReference;
+using Core::Detail::IsMoveAssignable;
+using Core::Detail::IsMoveConstructible;
+using Core::Detail::IsNullPointer;
+using Core::Detail::IsOneOf;
+using Core::Detail::IsOneOfIgnoringConstVolatile;
+using Core::Detail::IsPOD;
+using Core::Detail::IsPointer;
+using Core::Detail::IsRValueReference;
+using Core::Detail::IsSame;
+using Core::Detail::IsSameIgnoringConstVolatile;
 using Core::Detail::IsSigned;
+using Core::Detail::IsSpecializationOf;
+using Core::Detail::IsTrivial;
+using Core::Detail::IsTriviallyAssignable;
+using Core::Detail::IsTriviallyConstructible;
+using Core::Detail::IsTriviallyCopyable;
+using Core::Detail::IsTriviallyCopyAssignable;
+using Core::Detail::IsTriviallyCopyConstructible;
+using Core::Detail::IsTriviallyDestructible;
+using Core::Detail::IsTriviallyMoveAssignable;
+using Core::Detail::IsTriviallyMoveConstructible;
+using Core::Detail::IsUnion;
+using Core::Detail::IsUnsigned;
+using Core::Detail::IsVoid;
+using Core::Detail::MakeIndexSequence;
+using Core::Detail::MakeIntegerSequence;
+using Core::Detail::MakeSigned;
+using Core::Detail::MakeUnsigned;
+using Core::Detail::RemoveConst;
+using Core::Detail::RemoveConstVolatile;
+using Core::Detail::RemoveConstVolatileReference;
+using Core::Detail::RemovePointer;
+using Core::Detail::RemoveReference;
+using Core::Detail::RemoveVolatile;
+using Core::Detail::TrueType;
+using Core::Detail::UnderlyingType;
+using Core::Detail::Void;
 
 #endif

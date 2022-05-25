@@ -3,6 +3,8 @@
     "cmake.sourceDirectory": "${workspaceFolder}/Bootstrap",
     "cmake.buildDirectory": "${workspaceFolder}/Build",
     "files.associations": {
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "atomic": "cpp",
+        "utility": "cpp"
     }
 }
