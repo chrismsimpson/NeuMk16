@@ -6,6 +6,7 @@
 #include "RefCounted.h"
 #include "Assertions.h"
 #include "Platform.h"
+#include "Checked.h"
 
 namespace Core {
 
@@ -16,14 +17,16 @@ namespace Core {
 
     public:
 
-        using RefCountedType = unsigned int;
+        using RefCountType = unsigned int;
         using AllowOwnPointer = FalseType;
 
         ALWAYS_INLINE void ref() const {
 
             VERIFY(m_refCount > 0);
+
+            VERIFY(!Checked<RefCountType>::additionWouldOverflow(m_refCount, 1));
             
-            // VERIFY!
+            ++m_refCount;
         }
     
     protected:
@@ -37,7 +40,7 @@ namespace Core {
 
         ///
 
-        RefCountedType mutable m_refCount { 1 };
+        RefCountType mutable m_refCount { 1 };
     };
 
     ///

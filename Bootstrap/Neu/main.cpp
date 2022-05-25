@@ -16,13 +16,8 @@ int main(
 
     ///
 
-    using namespace Core;
-
-    String s = String();
 
     
-
-    auto n = s.foo();
 
     ///
 

@@ -12,13 +12,13 @@ namespace Core {
 
         ~String();
 
-        int foo();
-
     private:
 
         /* data */
 
     };
 }
+
+using Core::String;
 
 #endif
