@@ -1,23 +1,23 @@
 ## Setting up CMake with Ninja
 
 ```
-cmake Bootstrap -B Build -G Ninja
+cmake Bootstrap -B _Build -G Ninja
 ```
 
 ## Building
 
 ```
-cmake --build Build
+cmake --build _Build
 ```
 
 ## Running
 
 ```
-./Build/neu
+./_Build/neu
 ```
 
 # Info
 
 ```
-file ./Build/Neu/neu
+file ./_Build/Neu/neu
 ```

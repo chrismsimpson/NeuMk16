@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "build",
-            "command": "cmake --build Build",
+            "command": "cmake --build _Build",
             "type": "shell",
             "args": [],
             "group": {

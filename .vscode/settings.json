@@ -13,6 +13,21 @@
         "__string": "cpp",
         "algorithm": "cpp",
         "deque": "cpp",
-        "ios": "cpp"
+        "ios": "cpp",
+        "__functional_base": "cpp",
+        "__node_handle": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "cstddef": "cpp",
+        "__memory": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "limits": "cpp",
+        "locale": "cpp",
+        "random": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "tuple": "cpp",
+        "vector": "cpp"
     }
 }

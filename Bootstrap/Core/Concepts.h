@@ -64,10 +64,10 @@ namespace Core::Concepts {
     // template<typename T>
     // concept AnyString = Detail::IsConstructible<StringView, T>;
 
-    // ///
+    ///
 
-    // template<typename T, typename U>
-    // concept HashCompatible = IsHashCompatible<Detail::Decay<T>, Detail::Decay<U>>;
+    template<typename T, typename U>
+    concept HashCompatible = IsHashCompatible<Detail::Decay<T>, Detail::Decay<U>>;
 
     ///
 

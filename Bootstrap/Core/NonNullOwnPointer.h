@@ -11,7 +11,7 @@
 #include "Assertions.h"
 #include "RefCounted.h"
 #include "Extras.h"
-// #include "Traits.h"
+#include "Traits.h"
 #include "Types.h"
 
 #define NONNULLOWNPOINTER_SCRUB_BYTE 0xf1
@@ -205,17 +205,17 @@ namespace Core {
 
     ///
 
-    // template<typename T>
-    // struct Traits<NonNullOwnPointer<T>> : public GenericTraits<NonNullOwnPointer<T>> {
+    template<typename T>
+    struct Traits<NonNullOwnPointer<T>> : public GenericTraits<NonNullOwnPointer<T>> {
 
-    //     using PeekType = T*;
+        using PeekType = T*;
 
-    //     using ConstPeekType = const T*;
+        using ConstPeekType = const T*;
 
-    //     static unsigned hash(NonNullOwnPointer<T> const& p) { return pointerHash((FlatPtr)p.pointer()); }
+        static unsigned hash(NonNullOwnPointer<T> const& p) { return pointerHash((FlatPointer)p.pointer()); }
 
-    //     static bool equals(NonNullOwnPointer<T> const& a, NonNullOwnPointer<T> const& b) { return a.pointer() == b.pointer(); }
-    // };
+        static bool equals(NonNullOwnPointer<T> const& a, NonNullOwnPointer<T> const& b) { return a.pointer() == b.pointer(); }
+    };
 
     template<typename T, typename U>
     inline void swap(NonNullOwnPointer<T>& a, NonNullOwnPointer<U>& b) {

@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             // "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Build/Neu/neu",
+            "program": "${workspaceFolder}/_Build/Neu/neu",
             "args": [
 
             ],

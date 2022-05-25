@@ -299,17 +299,17 @@ namespace Core {
     }
 }
 
-// template<typename T>
-// struct Traits<NonNullRefPointer<T>> : public GenericTraits<NonNullRefPointer<T>> {
+template<typename T>
+struct Traits<NonNullRefPointer<T>> : public GenericTraits<NonNullRefPointer<T>> {
 
-//     using PeekType = T*;
+    using PeekType = T*;
 
-//     using ConstPeekType = const T*;
+    using ConstPeekType = const T*;
 
-//     static unsigned hash(NonNullRefPointer<T> const& p) { return ptr_hash(p.ptr()); }
+    static unsigned hash(NonNullRefPointer<T> const& p) { return pointerHash(p.pointer()); }
 
-//     static bool equals(NonNullRefPointer<T> const& a, NonNullRefPointer<T> const& b) { return a.ptr() == b.ptr(); }
-// };
+    static bool equals(NonNullRefPointer<T> const& a, NonNullRefPointer<T> const& b) { return a.pointer() == b.pointer(); }
+};
 
 using Core::adoptRef;
 using Core::makeRefCounted;

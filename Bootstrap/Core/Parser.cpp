@@ -14,6 +14,7 @@
 #include "OwnPointer.h"
 #include "NonNullOwnPointer.h"
 #include "NonNullRefPointer.h"
+#include "Traits.h"
 
 namespace Core {
 
