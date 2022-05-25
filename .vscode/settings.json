@@ -5,6 +5,8 @@
     "files.associations": {
         "type_traits": "cpp",
         "atomic": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "memory": "cpp",
+        "optional": "cpp"
     }
 }

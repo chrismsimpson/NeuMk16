@@ -10,6 +10,7 @@
 #include "Vector.h"
 #include "Types.h"
 #include "Forward.h"
+#include "Optional.h"
 
 namespace Core {
 

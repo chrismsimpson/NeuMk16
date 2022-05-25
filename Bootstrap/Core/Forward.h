@@ -141,6 +141,7 @@ using Core::NonNullRefPointer;
 using Core::Optional;
 using Core::OwnPointer;
 using Core::ReadOnlyBytes;
+using Core::ReadOnlySpan;
 using Core::RefPointer;
 using Core::Span;
 using Core::String;

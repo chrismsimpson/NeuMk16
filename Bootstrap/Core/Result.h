@@ -1,30 +1,137 @@
 #ifndef RESULT_H
 #define RESULT_H
 
+#include "Assertions.h"
+#include "Optional.h"
+
 namespace Core {
 
+    template<typename ValueT, typename ErrorT>
     class Result {
 
     public:
 
-        Result(/* args */);
+        using ValueType = ValueT;
 
-        ~Result();
+        using ErrorType = ErrorT;
+
+        ///
+
+        Result(ValueType const& res)
+            : m_result(res) {
+
+        }
+
+        Result(ValueType&& res)
+            : m_result(move(res)) {
+
+        }
+
+        Result(ErrorType const& error)
+            : m_error(error) {
+
+        }
+
+        Result(ErrorType&& error)
+            : m_error(move(error)) {
+
+        }
+
+        Result(Result&& other) = default;
+
+        Result(Result const& other) = default;
+
+        ~Result() = default;
+
+        ValueType& value() {
+
+            return m_result.value();
+        }
+
+        ErrorType& error() {
+
+            return m_error.value();
+        }
+
+        bool isError() const {
+
+            return m_error.hasValue();
+        }
+
+        ValueType releaseValue() {
+
+            return m_result.releaseValue();
+        }
+
+        ErrorType releaseError() {
+
+            return m_error.releaseValue();
+        }
 
     private:
-
-        /* data */
+        Optional<ValueType> m_result;
+        Optional<ErrorType> m_error;
     };
 
     ///
-    
-    Result::Result(/* args */) {
 
-    }
-    
-    Result::~Result() {
+    // Partial specialization for void value type
 
-    }
+    template<typename ErrorT>
+    class [[nodiscard]] Result<void, ErrorT> {
+
+    public:
+
+        using ValueType = void;
+
+        using ErrorType = ErrorT;
+
+        ///
+
+        Result(ErrorType const& error)
+            : m_error(error) {
+
+        }
+
+        Result(ErrorType&& error)
+            : m_error(move(error)) {
+
+        }
+
+        Result() = default;
+
+        Result(Result&& other) = default;
+
+        Result(Result const& other) = default;
+
+        ~Result() = default;
+
+        // For compatibility with TRY().
+
+        void value() {};
+
+        void releaseValue() {};
+
+        ErrorType& error() {
+
+            return m_error.value();
+        }
+
+        bool isError() const {
+
+            return m_error.hasValue();
+        }
+
+        ErrorType releaseError() {
+
+            return m_error.releaseValue();
+        }
+
+    private:
+        Optional<ErrorType> m_error;
+    };
 }
+
+using Core::Result;
 
 #endif
